@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BrightPage — Community Learning</title>
+<meta name="description" content="BrightPage is a free community learning nonprofit offering literacy, digital skills, and tutoring — read in English, Spanish, or French.">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F7F5EF;
+    --ink:#1E2A28;
+    --teal:#1F6F63;
+    --teal-dark:#154F46;
+    --gold:#C99A2E;
+    --line:#DEDACC;
+    --card:#FFFFFF;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{ font-family:ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace; }
+  .serif{ font-family:"Fraunces",ui-serif,Georgia,"Times New Roman",serif; font-weight:600; }
+  a{color:var(--teal-dark);}
+  .skip-link{
+    position:absolute; left:-999px; top:0;
+    background:var(--ink); color:#fff; padding:.6em 1em;
+    z-index:100; border-radius:0 0 6px 0;
+  }
+  .skip-link:focus{left:0;}
+  :focus-visible{outline:3px solid var(--teal); outline-offset:2px;}
+
+  .wrap{max-width:820px; margin:0 auto; padding:0 24px;}
+
+  header{
+    position:sticky; top:0; z-index:10;
+    background:rgba(247,245,239,.92);
+    backdrop-filter:saturate(140%) blur(6px);
+    border-bottom:1px solid var(--line);
+  }
+  .header-inner{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 24px; max-width:820px; margin:0 auto;
+  }
+  .logo{ font-weight:700; font-size:1.05rem; letter-spacing:.01em; display:flex; align-items:center; gap:8px; }
+  .logo-mark{ width:20px; height:20px; border-radius:5px; background:linear-gradient(135deg,var(--teal),var(--gold)); flex:none; }
+  .lang-toggle{ display:flex; gap:6px; border:1px solid var(--line); border-radius:999px; padding:3px; background:var(--card); }
+  .lang-btn{ font-size:.78rem; letter-spacing:.04em; font-weight:600; padding:5px 11px; border-radius:999px; border:none; background:transparent; color:var(--ink); cursor:pointer; }
+  .lang-btn[aria-pressed="true"]{background:var(--teal); color:#fff;}
+  .lang-btn:hover:not([aria-pressed="true"]){background:var(--paper);}
+
+  main{padding-bottom:8px;}
+
+  .hero{
+    padding:60px 0 40px; display:grid; grid-template-columns:1.3fr .9fr; gap:32px; align-items:center;
+  }
+  .hero-illo{ width:100%; height:auto; }
+  .eyebrow{
+    display:inline-block; font-size:.72rem; letter-spacing:.12em;
+    color:var(--teal-dark); background:#EAF2EF; border:1px solid #CFE3DD;
+    padding:5px 10px; border-radius:5px; margin-bottom:20px;
+  }
+  h1{ font-size:clamp(2rem,4.4vw,2.9rem); line-height:1.12; margin:0 0 18px; max-width:14ch; }
+  .subhead{ font-size:1.08rem; max-width:52ch; color:#3A4441; margin:0 0 30px; }
+  .cta-row{display:flex; flex-wrap:wrap; gap:14px;}
+  .btn{
+    font-size:.95rem; font-weight:600; padding:12px 22px; border-radius:8px;
+    text-decoration:none; display:inline-block; border:2px solid transparent; cursor:pointer;
+  }
+  .btn-primary{background:var(--teal); color:#fff;}
+  .btn-primary:hover{background:var(--teal-dark);}
+  .btn-secondary{border-color:var(--ink); color:var(--ink); background:transparent;}
+  .btn-secondary:hover{background:var(--ink); color:#fff;}
+
+  section{padding:44px 0; border-top:1px solid var(--line);}
+  h2{font-size:1.5rem; margin:0 0 16px;}
+  .mission p{max-width:60ch; font-size:1.02rem; color:#333d3a;}
+
+  .stats-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:16px; margin-top:8px; }
+  .stat-card{ background:var(--card); border:1px solid var(--line); border-radius:10px; padding:20px; text-align:left; }
+  .stat-num{ font-size:2rem; font-weight:700; color:var(--teal-dark); }
+  .stat-label{ font-size:.85rem; color:#4A544F; margin-top:4px; }
+
+  .pillars-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:16px; margin-top:20px; }
+  .pillar{ background:var(--card); border:1px solid var(--line); border-radius:10px; padding:20px; }
+  .pillar-mono{ width:34px; height:34px; border-radius:8px; background:var(--paper); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-weight:700; color:var(--teal-dark); margin-bottom:12px; font-size:.95rem; }
+  .pillar h3{font-size:1.05rem; margin:0 0 8px;}
+  .pillar p{margin:0; font-size:.92rem; color:#4A544F;}
+
+  .schedule-intro{ color:#4A544F; margin:-6px 0 18px; max-width:55ch; }
+  table.schedule{ width:100%; border-collapse:collapse; background:var(--card); border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+  table.schedule th, table.schedule td{ text-align:left; padding:12px 16px; font-size:.92rem; border-bottom:1px solid var(--line); }
+  table.schedule th{ font-size:.75rem; letter-spacing:.06em; color:var(--teal-dark); text-transform:uppercase; background:#EFEDE5; }
+  table.schedule tr:last-child td{ border-bottom:none; }
+
+  .testimonial{ border-left:4px solid var(--gold); padding-left:22px; margin:8px 0 0; }
+  .testimonial blockquote{ margin:0 0 10px; font-size:1.2rem; font-style:italic; font-weight:500; }
+  .testimonial cite{ font-style:normal; font-size:.85rem; color:#4A544F; }
+
+  .help-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-top:20px; }
+  .help-card{ background:var(--card); border:1px solid var(--line); border-radius:10px; padding:20px; }
+  .help-icon{ width:30px; height:30px; color:var(--teal-dark); margin-bottom:10px; }
+  .help-card h3{ font-size:1.02rem; margin:0 0 8px; }
+  .help-card p{ margin:0; font-size:.9rem; color:#4A544F; }
+
+  .faq-item{ border-bottom:1px solid var(--line); padding:14px 0; }
+  .faq-item:first-of-type{ border-top:1px solid var(--line); }
+  .faq-item summary{ cursor:pointer; font-weight:600; font-size:.98rem; list-style:none; display:flex; justify-content:space-between; gap:12px; }
+  .faq-item summary::-webkit-details-marker{ display:none; }
+  .faq-item summary::after{ content:"+"; color:var(--teal-dark); font-weight:700; flex:none; }
+  .faq-item[open] summary::after{ content:"–"; }
+  .faq-item p{ margin:10px 0 0; font-size:.92rem; color:#3A4441; max-width:60ch; }
+
+  .band{ background:var(--ink); color:var(--paper); border-top:none; }
+  .band h2{color:#fff;}
+  .band p{color:#D8DED9; max-width:52ch;}
+  .band .btn-primary{background:var(--gold); color:#1E2A28;}
+  .band .btn-primary:hover{background:#B98C29;}
+
+  .newsletter{ display:flex; flex-wrap:wrap; gap:10px; margin-top:18px; max-width:420px; }
+  .newsletter input{ flex:1 1 200px; padding:11px 14px; border-radius:8px; border:1px solid var(--line); font-size:.92rem; font-family:inherit; }
+  .newsletter input:focus-visible{ outline:3px solid var(--teal); outline-offset:1px; }
+  .newsletter-note{ font-size:.8rem; color:#4A544F; margin-top:8px; }
+  .newsletter-thanks{ font-size:.88rem; color:var(--teal-dark); font-weight:600; margin-top:10px; display:none; }
+  .newsletter-thanks.show{ display:block; }
+
+  footer{ border-top:1px solid var(--line); padding:32px 0 48px; }
+  .badges{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;}
+  .badge{ font-size:.72rem; letter-spacing:.03em; padding:5px 10px; border:1px solid var(--line); border-radius:6px; background:var(--card); color:#4A544F; }
+  .footer-note{font-size:.85rem; color:#5A625E; max-width:56ch;}
+
+  @media (max-width:720px){
+    .hero{ grid-template-columns:1fr; }
+    .hero-illo{ max-width:220px; order:-1; }
+  }
+  @media (max-width:520px){
+    .cta-row{flex-direction:column;}
+    .btn{text-align:center;}
+    table.schedule{ font-size:.85rem; }
+    table.schedule th, table.schedule td{ padding:10px; }
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none !important; scroll-behavior:auto !important;}
+  }
+</style>
+</head>
+<body>
+
+<a href="#main" class="skip-link">Skip to content</a>
+
+<header>
+  <div class="header-inner">
+    <div class="logo"><span class="logo-mark" aria-hidden="true"></span>BrightPage</div>
+    <div class="lang-toggle" role="group" aria-label="Choose language">
+      <button class="lang-btn" data-lang="en" aria-pressed="true">EN</button>
+      <button class="lang-btn" data-lang="es" aria-pressed="false">ES</button>
+      <button class="lang-btn" data-lang="fr" aria-pressed="false">FR</button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <div class="wrap">
+    <section class="hero" aria-live="polite" style="border-top:none;">
+      <div>
+        <span class="eyebrow mono" data-i18n="eyebrow">COMMUNITY LEARNING NONPROFIT</span>
+        <h1 class="serif" data-i18n="headline">Learning that meets you where you are.</h1>
+        <p class="subhead" data-i18n="subhead">BrightPage brings free reading, technology, and tutoring support to neighbors of every age — in the language you read best.</p>
+        <div class="cta-row">
+          <a href="#volunteer" class="btn btn-primary" data-i18n="ctaPrimary">Volunteer with us</a>
+          <a href="#volunteer" class="btn btn-secondary" data-i18n="ctaSecondary">Support a learner</a>
+        </div>
+      </div>
+      <svg class="hero-illo" viewBox="0 0 240 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Illustration of an open book with light radiating from its pages">
+        <ellipse cx="120" cy="196" rx="88" ry="10" fill="#DEDACC" opacity="0.6"/>
+        <path d="M30 70 C60 55, 100 55, 120 72 L120 168 C100 151, 60 151, 30 166 Z" fill="#FFFFFF" stroke="#1E2A28" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M210 70 C180 55, 140 55, 120 72 L120 168 C140 151, 180 151, 210 166 Z" fill="#FFFFFF" stroke="#1E2A28" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M46 82 L104 92 M46 100 L104 110 M46 118 L96 126" stroke="#DEDACC" stroke-width="3" stroke-linecap="round"/>
+        <path d="M194 82 L136 92 M194 100 L136 110 M194 118 L144 126" stroke="#DEDACC" stroke-width="3" stroke-linecap="round"/>
+        <g stroke="#C99A2E" stroke-width="4" stroke-linecap="round">
+          <line x1="120" y1="18" x2="120" y2="36"/>
+          <line x1="86" y1="26" x2="96" y2="40"/>
+          <line x1="154" y1="26" x2="144" y2="40"/>
+          <line x1="60" y1="46" x2="74" y2="54"/>
+          <line x1="180" y1="46" x2="166" y2="54"/>
+        </g>
+        <circle cx="120" cy="46" r="10" fill="#1F6F63"/>
+      </svg>
+    </section>
+
+    <section aria-live="polite">
+      <h2 data-i18n="statsTitle">Our impact so far</h2>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-num">1,240</div><div class="stat-label" data-i18n="stat1Label">sessions held last year</div></div>
+        <div class="stat-card"><div class="stat-num">3</div><div class="stat-label" data-i18n="stat2Label">languages spoken in every room</div></div>
+        <div class="stat-card"><div class="stat-num">94%</div><div class="stat-label" data-i18n="stat3Label">of learners return for a second class</div></div>
+      </div>
+    </section>
+
+    <section class="mission" aria-live="polite">
+      <h2 data-i18n="missionTitle">Why we exist</h2>
+      <p data-i18n="missionBody">Public libraries are shrinking. Waitlists for tutoring are months long. BrightPage fills the gap with drop-in sessions, no appointment and no cost, five days a week.</p>
+    </section>
+
+    <section aria-live="polite">
+      <h2 data-i18n="pillarsTitle">What we offer</h2>
+      <div class="pillars-grid">
+        <div class="pillar">
+          <div class="pillar-mono mono" aria-hidden="true">Aa</div>
+          <h3 data-i18n="pillar1Title">Reading &amp; Literacy</h3>
+          <p data-i18n="pillar1Desc">One-on-one and small-group sessions for adults and children building reading confidence.</p>
+        </div>
+        <div class="pillar">
+          <div class="pillar-mono mono" aria-hidden="true">01</div>
+          <h3 data-i18n="pillar2Title">Digital Skills</h3>
+          <p data-i18n="pillar2Desc">Email, job applications, video calls with family — practical tech help for first-time users.</p>
+        </div>
+        <div class="pillar">
+          <div class="pillar-mono mono" aria-hidden="true">HW</div>
+          <h3 data-i18n="pillar3Title">Homework Help</h3>
+          <p data-i18n="pillar3Desc">Quiet space, patient tutors, and snacks. Monday through Friday, right after school.</p>
+        </div>
+      </div>
+    </section>
+
+    <section aria-live="polite">
+      <h2 data-i18n="scheduleTitle">Weekly schedule</h2>
+      <p class="schedule-intro" data-i18n="scheduleIntro">Every session is drop-in — no registration, no fee, no waitlist.</p>
+      <table class="schedule">
+        <thead><tr><th data-i18n="dayHead">Day</th><th data-i18n="programHead">Program</th></tr></thead>
+        <tbody>
+          <tr><td data-i18n="day1">Monday</td><td data-i18n="day1Program">Reading Circle (Adults), 10:00–11:30 AM</td></tr>
+          <tr><td data-i18n="day2">Tuesday</td><td data-i18n="day2Program">Digital Skills Lab, 6:00–7:30 PM</td></tr>
+          <tr><td data-i18n="day3">Wednesday</td><td data-i18n="day3Program">Homework Help, 3:30–5:00 PM</td></tr>
+          <tr><td data-i18n="day4">Thursday</td><td data-i18n="day4Program">Reading Circle (Kids), 4:00–5:00 PM</td></tr>
+          <tr><td data-i18n="day5">Friday</td><td data-i18n="day5Program">Open Drop-in — All Programs, 10:00 AM–1:00 PM</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section aria-live="polite">
+      <h2 data-i18n="testimonialTitle">In their words</h2>
+      <div class="testimonial">
+        <blockquote data-i18n="testimonialQuote">I came in nervous about using email for the first time. Now I video-call my grandchildren every Sunday.</blockquote>
+        <cite data-i18n="testimonialAuthor">— Marisol R., learner since 2023</cite>
+      </div>
+    </section>
+
+    <section aria-live="polite">
+      <h2 data-i18n="helpTitle">Three ways to help</h2>
+      <div class="help-grid">
+        <div class="help-card">
+          <svg class="help-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-4.35-9.5-8.5C.7 9 2 5.5 5.5 5.5c2 0 3.5 1.2 4.5 2.7 1-1.5 2.5-2.7 4.5-2.7 3.5 0 4.8 3.5 3 7C19 16.65 12 21 12 21z"/></svg>
+          <h3 data-i18n="help1Title">Volunteer</h3>
+          <p data-i18n="help1Desc">Lead a session or assist a tutor. Training and materials provided.</p>
+        </div>
+        <div class="help-card">
+          <svg class="help-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="9" width="18" height="11" rx="1.5"/><path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2M12 5v15M8 5c0-1.7 1.3-3 3-3M16 5c0-1.7-1.3-3-3-3"/></svg>
+          <h3 data-i18n="help2Title">Donate</h3>
+          <p data-i18n="help2Desc">Cover the cost of books, laptops, and snacks for a full year of sessions.</p>
+        </div>
+        <div class="help-card">
+          <svg class="help-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 11v2a2 2 0 0 0 2 2h1l3 4V5L6 9H5a2 2 0 0 0-2 2z"/><path d="M15 8a5 5 0 0 1 0 8M18.5 5a9 9 0 0 1 0 14"/></svg>
+          <h3 data-i18n="help3Title">Spread the word</h3>
+          <p data-i18n="help3Desc">Tell a neighbor. Most learners hear about BrightPage from someone they trust.</p>
+        </div>
+      </div>
+    </section>
+
+    <section aria-live="polite">
+      <h2 data-i18n="faqTitle">Common questions</h2>
+      <div class="faq-item"><details><summary data-i18n="faq1Q">Do I need to speak Spanish or French to volunteer?</summary><p data-i18n="faq1A">No. Bilingual volunteers are welcome, but many tutors work in English with an interpreter or translation cards on hand.</p></details></div>
+      <div class="faq-item"><details><summary data-i18n="faq2Q">Is there a cost for learners?</summary><p data-i18n="faq2A">Never. Every session, book, and device loan is free.</p></details></div>
+      <div class="faq-item"><details><summary data-i18n="faq3Q">Can my company sponsor a session?</summary><p data-i18n="faq3A">Yes — sponsorships cover one week of a program and include a shoutout in our newsletter.</p></details></div>
+      <div class="faq-item"><details><summary data-i18n="faq4Q">How do I request a location in my neighborhood?</summary><p data-i18n="faq4A">Email us with your neighborhood and a rough headcount. We open a new site once we have five interested households.</p></details></div>
+    </section>
+  </div>
+
+  <section class="band" id="volunteer" aria-live="polite">
+    <div class="wrap">
+      <h2 data-i18n="bandTitle">Two hours a month changes a life.</h2>
+      <p data-i18n="bandBody">No teaching experience required — just patience and a Tuesday evening.</p>
+      <div class="cta-row" style="margin-top:22px;">
+        <a href="#" class="btn btn-primary" data-i18n="bandButton">Sign up to volunteer</a>
+      </div>
+
+      <form class="newsletter" id="newsletterForm">
+        <label for="newsletterEmail" class="visually-hidden" style="position:absolute;left:-9999px;" data-i18n="newsletterPlaceholder">you@example.com</label>
+        <input type="email" id="newsletterEmail" data-i18n-placeholder="newsletterPlaceholder" placeholder="you@example.com" required>
+        <button type="submit" class="btn btn-secondary" style="border-color:var(--paper); color:var(--paper);" data-i18n="newsletterButton">Subscribe</button>
+      </form>
+      <p class="newsletter-note" data-i18n="newsletterDesc">One short email a month — new locations, volunteer openings, and learner stories.</p>
+      <p class="newsletter-thanks" id="newsletterThanks" data-i18n="newsletterThanks">Thanks — check your inbox to confirm.</p>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <footer>
+      <div class="badges">
+        <span class="badge mono">HTML/CSS</span>
+        <span class="badge mono">i18n · EN / ES / FR</span>
+        <span class="badge mono">WCAG AA</span>
+        <span class="badge mono">~24 KB page + 1 web font</span>
+      </div>
+      <p class="footer-note" data-i18n="footerNote">Built as a lean, accessible one-page site — light markup, one display font, and readable in English, Spanish, or French.</p>
+    </footer>
+  </div>
+</main>
+
+<script>
+(function(){
+  var i18n = {
+    en: {
+      eyebrow:"COMMUNITY LEARNING NONPROFIT",
+      headline:"Learning that meets you where you are.",
+      subhead:"BrightPage brings free reading, technology, and tutoring support to neighbors of every age — in the language you read best.",
+      ctaPrimary:"Volunteer with us",
+      ctaSecondary:"Support a learner",
+      statsTitle:"Our impact so far",
+      stat1Label:"sessions held last year",
+      stat2Label:"languages spoken in every room",
+      stat3Label:"of learners return for a second class",
+      missionTitle:"Why we exist",
+      missionBody:"Public libraries are shrinking. Waitlists for tutoring are months long. BrightPage fills the gap with drop-in sessions, no appointment and no cost, five days a week.",
+      pillarsTitle:"What we offer",
+      pillar1Title:"Reading & Literacy",
+      pillar1Desc:"One-on-one and small-group sessions for adults and children building reading confidence.",
+      pillar2Title:"Digital Skills",
+      pillar2Desc:"Email, job applications, video calls with family — practical tech help for first-time users.",
+      pillar3Title:"Homework Help",
+      pillar3Desc:"Quiet space, patient tutors, and snacks. Monday through Friday, right after school.",
+      scheduleTitle:"Weekly schedule",
+      scheduleIntro:"Every session is drop-in — no registration, no fee, no waitlist.",
+      dayHead:"Day", programHead:"Program",
+      day1:"Monday", day1Program:"Reading Circle (Adults), 10:00–11:30 AM",
+      day2:"Tuesday", day2Program:"Digital Skills Lab, 6:00–7:30 PM",
+      day3:"Wednesday", day3Program:"Homework Help, 3:30–5:00 PM",
+      day4:"Thursday", day4Program:"Reading Circle (Kids), 4:00–5:00 PM",
+      day5:"Friday", day5Program:"Open Drop-in — All Programs, 10:00 AM–1:00 PM",
+      testimonialTitle:"In their words",
+      testimonialQuote:"I came in nervous about using email for the first time. Now I video-call my grandchildren every Sunday.",
+      testimonialAuthor:"— Marisol R., learner since 2023",
+      helpTitle:"Three ways to help",
+      help1Title:"Volunteer", help1Desc:"Lead a session or assist a tutor. Training and materials provided.",
+      help2Title:"Donate", help2Desc:"Cover the cost of books, laptops, and snacks for a full year of sessions.",
+      help3Title:"Spread the word", help3Desc:"Tell a neighbor. Most learners hear about BrightPage from someone they trust.",
+      faqTitle:"Common questions",
+      faq1Q:"Do I need to speak Spanish or French to volunteer?", faq1A:"No. Bilingual volunteers are welcome, but many tutors work in English with an interpreter or translation cards on hand.",
+      faq2Q:"Is there a cost for learners?", faq2A:"Never. Every session, book, and device loan is free.",
+      faq3Q:"Can my company sponsor a session?", faq3A:"Yes — sponsorships cover one week of a program and include a shoutout in our newsletter.",
+      faq4Q:"How do I request a location in my neighborhood?", faq4A:"Email us with your neighborhood and a rough headcount. We open a new site once we have five interested households.",
+      bandTitle:"Two hours a month changes a life.",
+      bandBody:"No teaching experience required — just patience and a Tuesday evening.",
+      bandButton:"Sign up to volunteer",
+      newsletterDesc:"One short email a month — new locations, volunteer openings, and learner stories.",
+      newsletterPlaceholder:"you@example.com",
+      newsletterButton:"Subscribe",
+      newsletterThanks:"Thanks — check your inbox to confirm.",
+      footerNote:"Built as a lean, accessible one-page site — light markup, one display font, and readable in English, Spanish, or French."
+    },
+    es: {
+      eyebrow:"ORGANIZACIÓN DE APRENDIZAJE COMUNITARIO",
+      headline:"Aprendizaje que se adapta a ti.",
+      subhead:"BrightPage ofrece lectura, tecnología y tutorías gratuitas a vecinos de todas las edades, en el idioma que mejor entiendes.",
+      ctaPrimary:"Sé voluntario",
+      ctaSecondary:"Apoya a un estudiante",
+      statsTitle:"Nuestro impacto hasta ahora",
+      stat1Label:"sesiones realizadas el año pasado",
+      stat2Label:"idiomas que se hablan en cada sala",
+      stat3Label:"de los estudiantes regresan a una segunda clase",
+      missionTitle:"Por qué existimos",
+      missionBody:"Las bibliotecas públicas tienen cada vez menos recursos. Las listas de espera para tutorías duran meses. BrightPage llena ese vacío con sesiones sin cita previa, sin costo, cinco días a la semana.",
+      pillarsTitle:"Lo que ofrecemos",
+      pillar1Title:"Lectura y Alfabetización",
+      pillar1Desc:"Sesiones individuales y en grupos pequeños para adultos y niños que buscan leer con más confianza.",
+      pillar2Title:"Habilidades Digitales",
+      pillar2Desc:"Correo electrónico, solicitudes de empleo, videollamadas con la familia: ayuda tecnológica práctica para quienes recién comienzan.",
+      pillar3Title:"Ayuda con la Tarea",
+      pillar3Desc:"Un espacio tranquilo, tutores pacientes y meriendas. De lunes a viernes, justo después de la escuela.",
+      scheduleTitle:"Horario semanal",
+      scheduleIntro:"Cada sesión es sin cita previa: sin inscripción, sin costo, sin lista de espera.",
+      dayHead:"Día", programHead:"Programa",
+      day1:"Lunes", day1Program:"Círculo de Lectura (Adultos), 10:00–11:30 a.m.",
+      day2:"Martes", day2Program:"Laboratorio de Habilidades Digitales, 6:00–7:30 p.m.",
+      day3:"Miércoles", day3Program:"Ayuda con la Tarea, 3:30–5:00 p.m.",
+      day4:"Jueves", day4Program:"Círculo de Lectura (Niños), 4:00–5:00 p.m.",
+      day5:"Viernes", day5Program:"Puertas Abiertas — Todos los Programas, 10:00 a.m.–1:00 p.m.",
+      testimonialTitle:"En sus palabras",
+      testimonialQuote:"Llegué nerviosa por usar el correo electrónico por primera vez. Ahora hago videollamadas con mis nietos todos los domingos.",
+      testimonialAuthor:"— Marisol R., estudiante desde 2023",
+      helpTitle:"Tres formas de ayudar",
+      help1Title:"Sé voluntario", help1Desc:"Dirige una sesión o apoya a un tutor. Se ofrece capacitación y materiales.",
+      help2Title:"Dona", help2Desc:"Cubre el costo de libros, computadoras y meriendas para un año completo de sesiones.",
+      help3Title:"Corre la voz", help3Desc:"Cuéntale a un vecino. La mayoría de los estudiantes conoce BrightPage por alguien de confianza.",
+      faqTitle:"Preguntas frecuentes",
+      faq1Q:"¿Necesito hablar español o francés para ser voluntario?", faq1A:"No. Los voluntarios bilingües son bienvenidos, pero muchos tutores trabajan en inglés con un intérprete o tarjetas de traducción a la mano.",
+      faq2Q:"¿Hay algún costo para los estudiantes?", faq2A:"Nunca. Cada sesión, libro y préstamo de dispositivo es gratuito.",
+      faq3Q:"¿Puede mi empresa patrocinar una sesión?", faq3A:"Sí: los patrocinios cubren una semana de un programa e incluyen una mención en nuestro boletín.",
+      faq4Q:"¿Cómo solicito una sede en mi vecindario?", faq4A:"Escríbenos con tu vecindario y un número aproximado de interesados. Abrimos una nueva sede al reunir cinco hogares interesados.",
+      bandTitle:"Dos horas al mes cambian una vida.",
+      bandBody:"No se requiere experiencia docente, solo paciencia y un martes por la noche.",
+      bandButton:"Inscríbete como voluntario",
+      newsletterDesc:"Un correo breve al mes: nuevas sedes, vacantes de voluntariado e historias de estudiantes.",
+      newsletterPlaceholder:"tucorreo@ejemplo.com",
+      newsletterButton:"Suscribirme",
+      newsletterThanks:"Gracias — revisa tu correo para confirmar.",
+      footerNote:"Un sitio de una sola página, ligero y accesible: poco código, una fuente de exhibición, y disponible en inglés, español o francés."
+    },
+    fr: {
+      eyebrow:"ORGANISME D'APPRENTISSAGE COMMUNAUTAIRE",
+      headline:"Un apprentissage à votre rythme.",
+      subhead:"BrightPage propose des cours de lecture, de technologie et de soutien scolaire gratuits, dans la langue que vous lisez le mieux.",
+      ctaPrimary:"Devenir bénévole",
+      ctaSecondary:"Soutenir un apprenant",
+      statsTitle:"Notre impact à ce jour",
+      stat1Label:"séances organisées l'an dernier",
+      stat2Label:"langues parlées dans chaque salle",
+      stat3Label:"des apprenants reviennent pour un second cours",
+      missionTitle:"Notre raison d'être",
+      missionBody:"Les bibliothèques publiques manquent de moyens. Les listes d'attente pour du soutien scolaire durent des mois. BrightPage comble cet écart avec des séances sans rendez-vous, gratuites, cinq jours par semaine.",
+      pillarsTitle:"Ce que nous proposons",
+      pillar1Title:"Lecture et alphabétisation",
+      pillar1Desc:"Séances individuelles et en petits groupes pour adultes et enfants qui veulent lire avec plus d'assurance.",
+      pillar2Title:"Compétences numériques",
+      pillar2Desc:"Courriels, candidatures d'emploi, appels vidéo en famille : une aide technique concrète pour les débutants.",
+      pillar3Title:"Aide aux devoirs",
+      pillar3Desc:"Un espace calme, des bénévoles patients et des collations. Du lundi au vendredi, juste après l'école.",
+      scheduleTitle:"Horaire hebdomadaire",
+      scheduleIntro:"Chaque séance est sans rendez-vous : pas d'inscription, pas de frais, pas de liste d'attente.",
+      dayHead:"Jour", programHead:"Programme",
+      day1:"Lundi", day1Program:"Cercle de lecture (Adultes), 10 h 00–11 h 30",
+      day2:"Mardi", day2Program:"Atelier de compétences numériques, 18 h 00–19 h 30",
+      day3:"Mercredi", day3Program:"Aide aux devoirs, 15 h 30–17 h 00",
+      day4:"Jeudi", day4Program:"Cercle de lecture (Enfants), 16 h 00–17 h 00",
+      day5:"Vendredi", day5Program:"Portes ouvertes — tous les programmes, 10 h 00–13 h 00",
+      testimonialTitle:"Dans leurs mots",
+      testimonialQuote:"J'étais nerveuse à l'idée d'utiliser le courriel pour la première fois. Maintenant, j'appelle mes petits-enfants en vidéo chaque dimanche.",
+      testimonialAuthor:"— Marisol R., apprenante depuis 2023",
+      helpTitle:"Trois façons d'aider",
+      help1Title:"Devenir bénévole", help1Desc:"Animez une séance ou assistez un tuteur. Formation et matériel fournis.",
+      help2Title:"Faire un don", help2Desc:"Couvrez le coût des livres, des ordinateurs et des collations pour une année complète de séances.",
+      help3Title:"Passer le mot", help3Desc:"Parlez-en à un voisin. La plupart des apprenants découvrent BrightPage grâce à une personne de confiance.",
+      faqTitle:"Questions fréquentes",
+      faq1Q:"Dois-je parler espagnol ou français pour devenir bénévole ?", faq1A:"Non. Les bénévoles bilingues sont les bienvenus, mais de nombreux tuteurs travaillent en anglais avec un interprète ou des fiches de traduction à portée de main.",
+      faq2Q:"Y a-t-il des frais pour les apprenants ?", faq2A:"Jamais. Chaque séance, livre et prêt d'appareil est gratuit.",
+      faq3Q:"Mon entreprise peut-elle parrainer une séance ?", faq3A:"Oui — les parrainages couvrent une semaine de programme et incluent une mention dans notre infolettre.",
+      faq4Q:"Comment demander un site dans mon quartier ?", faq4A:"Écrivez-nous avec votre quartier et un nombre approximatif de foyers intéressés. Nous ouvrons un nouveau site dès que cinq foyers se manifestent.",
+      bandTitle:"Deux heures par mois changent une vie.",
+      bandBody:"Aucune expérience d'enseignement requise, juste de la patience et un mardi soir.",
+      bandButton:"Devenir bénévole",
+      newsletterDesc:"Un courriel court par mois : nouveaux sites, postes de bénévoles et récits d'apprenants.",
+      newsletterPlaceholder:"vous@exemple.com",
+      newsletterButton:"S'abonner",
+      newsletterThanks:"Merci — vérifiez votre boîte de réception pour confirmer.",
+      footerNote:"Un site d'une seule page, léger et accessible : peu de code, une police de titrage, disponible en anglais, espagnol ou français."
+    }
+  };
+
+  var nodes = document.querySelectorAll('[data-i18n]');
+  var placeholderNodes = document.querySelectorAll('[data-i18n-placeholder]');
+  var buttons = document.querySelectorAll('.lang-btn');
+
+  function setLang(lang){
+    var dict = i18n[lang];
+    if(!dict) return;
+    nodes.forEach(function(el){
+      var key = el.getAttribute('data-i18n');
+      if(dict[key] !== undefined){ el.textContent = dict[key]; }
+    });
+    placeholderNodes.forEach(function(el){
+      var key = el.getAttribute('data-i18n-placeholder');
+      if(dict[key] !== undefined){ el.setAttribute('placeholder', dict[key]); }
+    });
+    document.documentElement.setAttribute('lang', lang);
+    buttons.forEach(function(b){
+      b.setAttribute('aria-pressed', b.getAttribute('data-lang') === lang ? 'true' : 'false');
+    });
+  }
+
+  buttons.forEach(function(b){
+    b.addEventListener('click', function(){ setLang(b.getAttribute('data-lang')); });
+  });
+
+  var form = document.getElementById('newsletterForm');
+  var thanks = document.getElementById('newsletterThanks');
+  if(form){
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      thanks.classList.add('show');
+      form.reset();
+    });
+  }
+})();
+</script>
+
+</body>
+</html>
